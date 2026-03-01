@@ -24,7 +24,7 @@ export default function CaseStudy() {
         {/* Visual Section */}
         <div className="flex-1 border border-[#4ADE80]/20 rounded-2xl bg-[#111111] p-4 shadow-[0_0_30px_rgba(74,222,128,0.1)]">
           <img 
-            src="/bookin_ai_final_workflow.png" 
+            src="/public/bookin_ai_final_workflow.png" 
             alt="AI Workflow Diagram" 
             className="w-full h-auto rounded-lg"
           />
