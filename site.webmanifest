@@ -1,0 +1,15 @@
+{
+  "name": "Bookin-AI",
+  "short_name": "Bookin-AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "/assets/bookin-ai-logo.png",
+      "sizes": "420x280",
+      "type": "image/png"
+    }
+  ]
+}
