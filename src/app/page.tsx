@@ -1,4 +1,5 @@
 "use client";
+import CaseStudy from '@/src/app/CaseStudy';
 import './globals.css';
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -319,11 +320,12 @@ export default function Page() {
             </div>
           </div>
         </section>
+        <CaseStudy />
       </main>
 
       <footer className="py-8">
         <div className="mx-auto w-[92vw] max-w-6xl text-sm text-zinc-500">
-          Bookin-AI · AIOps Automation · Green-Tech Performance · Voice SEO Systems
+        Bookin-AI · AIOps Automation · Green-Tech Performance · Voice SEO Systems
         </div>
       </footer>
     </div>
