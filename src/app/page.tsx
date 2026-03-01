@@ -1,5 +1,5 @@
 "use client";
-import CaseStudy from '@/src/app/CaseStudy';
+import CaseStudy from './CaseStudy';
 import './globals.css';
 import { useEffect, useMemo, useRef, useState } from "react";
 
