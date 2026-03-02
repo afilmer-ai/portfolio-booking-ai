@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import ChatWidget from '../components/ChatWidget';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://bookin-ai.com"),
@@ -106,7 +107,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredDataJsonLd) }} />
       </head>
-      <body>{children}</body>
+      <body>{children} <ChatWidget /></body>
     </html>
   );
 }
