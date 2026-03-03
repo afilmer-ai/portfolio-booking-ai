@@ -5,9 +5,31 @@ export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<{ role: string, content: string }[]>([
     { role: 'assistant', content: 'Hi! I’m the Bookin-AI bot. How can I help you automate your revenue today?' }
   ]);
+
+  // --- AUTOMATION INTEGRATION ---
+  const pushToAutomation = async (userEmail: string) => {
+    // PASTE YOUR URL BELOW FROM ACTIVEPIECES
+    const webhookUrl = 'https://cloud.activepieces.com/api/v1/webhooks/28FKvgk3x0OIBJnD1O104'; 
+
+    try {
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          transcript: messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n'),
+          source: "Bookin-AI Concierge",
+          timestamp: new Date().toISOString()
+        }),
+      });
+      console.log("Lead pushed to HQ! 🚀");
+    } catch (error) {
+      console.error("Automation error:", error);
+    }
+  };
 
   // Show the text bubble after a 2-second delay
   useEffect(() => {
@@ -19,9 +41,15 @@ export default function ChatWidget() {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+
+    // 1. Check if the user is providing an email to trigger automation
+    const emailMatch = input.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch) {
+      pushToAutomation(emailMatch[0]);
+    }
     
     const userMsg = { role: 'user', content: input };
-    setMessages([...messages, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput('');
 
     const res = await fetch('/api/chat', {
