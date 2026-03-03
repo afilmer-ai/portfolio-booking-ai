@@ -9,29 +9,34 @@ export default function ChatWidget() {
     { role: 'assistant', content: 'Hi! I’m the Bookin-AI bot. How can I help you automate your revenue today?' }
   ]);
 
-  // --- AUTOMATION INTEGRATION ---
+  // --- UPDATED BULLETPROOF AUTOMATION ---
   const pushToAutomation = async (userEmail: string) => {
-    // PASTE YOUR URL BELOW FROM ACTIVEPIECES
-    const webhookUrl = 'https://cloud.activepieces.com/api/v1/webhooks/28FKvgk3x0OIBJnD1O104'; 
+    // 1. PASTE YOUR URL BELOW FROM ACTIVEPIECES
+    const webhookUrl = "https://cloud.activepieces.com/api/v1/webhooks/28FKvgk3x0OIBJnD1O104"; 
+
+    console.log("🚀 Initializing lead push for:", userEmail);
 
     try {
       await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", // Forced POST
+        mode: "no-cors", // Prevents browser "pre-flight" blocks
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: userEmail,
           transcript: messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n'),
-          source: "Bookin-AI Concierge",
+          source: "Bookin-AI Engine",
           timestamp: new Date().toISOString()
         }),
       });
-      console.log("Lead pushed to HQ! 🚀");
+      console.log("✅ Data sent to Activepieces successfully.");
     } catch (error) {
-      console.error("Automation error:", error);
+      console.error("❌ Automation error:", error);
     }
   };
 
-  // Show the text bubble after a 2-second delay
+  // Tooltip delay logic
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!isOpen) setShowTooltip(true);
@@ -42,7 +47,7 @@ export default function ChatWidget() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    // 1. Check if the user is providing an email to trigger automation
+    // Detect email in the input to trigger the push
     const emailMatch = input.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (emailMatch) {
       pushToAutomation(emailMatch[0]);
@@ -52,18 +57,24 @@ export default function ChatWidget() {
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
 
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ messages: [...messages, userMsg] }),
-    });
-    const botMsg = await res.json();
-    setMessages((prev) => [...prev, botMsg]);
+    // Call your internal Next.js API for the AI response
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMsg] }),
+      });
+      const botMsg = await res.json();
+      setMessages((prev) => [...prev, botMsg]);
+    } catch (err) {
+      console.error("Chat API error:", err);
+    }
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
       
-      {/* Floating Text Bubble (Tooltip) */}
+      {/* Floating Tooltip */}
       {showTooltip && !isOpen && (
         <div className="mb-4 mr-2 bg-[#1F2937] border border-[#4ADE80] text-white p-3 rounded-2xl rounded-br-none shadow-[0_0_15px_rgba(74,222,128,0.3)] animate-bounce-slow max-w-[220px] relative">
           <p className="text-xs font-medium leading-tight">
@@ -78,7 +89,7 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* The Main Bot Toggle Button */}
+      {/* Main Button */}
       <button 
         onClick={() => { setIsOpen(!isOpen); setShowTooltip(false); }}
         className="bg-[#0D0D0D] border-2 border-[#4ADE80] p-4 rounded-full shadow-[0_0_20px_rgba(74,222,128,0.4)] hover:scale-110 active:scale-95 transition-all group"
@@ -86,7 +97,7 @@ export default function ChatWidget() {
         <span className="text-2xl group-hover:rotate-12 transition-transform inline-block">🤖</span>
       </button>
 
-      {/* The Chat Window */}
+      {/* Chat Window */}
       {isOpen && (
         <div className="absolute bottom-20 right-0 w-80 h-96 bg-[#1F2937] border border-[#4ADE80] rounded-xl flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
           <div className="p-3 bg-[#0D0D0D] text-[#4ADE80] font-bold border-b border-[#4ADE80] flex justify-between items-center">
@@ -94,23 +105,23 @@ export default function ChatWidget() {
             <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">✕</button>
           </div>
           
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 text-sm scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 text-sm scrollbar-hide bg-[#111827]">
             {messages.map((m, i) => (
               <div key={i} className={`${m.role === 'user' ? 'text-right' : 'text-left'}`}>
-                <span className={`inline-block p-2 rounded-lg ${m.role === 'user' ? 'bg-[#4ADE80] text-black font-medium' : 'bg-gray-800 text-white border border-gray-700'}`}>
+                <span className={`inline-block p-2 rounded-lg ${m.role === 'user' ? 'bg-[#4ADE80] text-black font-semibold' : 'bg-gray-800 text-white border border-gray-700'}`}>
                   {m.content}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="p-3 border-t border-gray-700 bg-gray-900 flex">
+          <div className="p-3 border-t border-gray-700 bg-[#0D0D0D] flex">
             <input 
               value={input} 
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               className="flex-1 bg-black text-white p-2 rounded-l-md outline-none text-xs border border-gray-800 focus:border-[#4ADE80]" 
-              placeholder="Ask about the Authority Stack..."
+              placeholder="Type your email to get the blueprint..."
             />
             <button 
               onClick={sendMessage} 
